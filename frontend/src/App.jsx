@@ -6,6 +6,17 @@ const IMAGE_FILES = [
   '1.png', '3.png', '5.png', '7.png', '9.png', '11.png', '13.png'
 ];
 
+// Define optional guides for each image (User will provide these values later)
+// Format: { [stepIndex]: { x, y, w, h } }
+const GUIDES = {
+  0: { x: 39.39, y: 65.14, w: 20.07, h: 27.43 },
+  1: { x: 35.24, y: 60.43, w: 18.68, h: 29.29 },
+  2: { x: 39.08, y: 34.14, w: 26.30, h: 23.71 },
+  3: { x: 50.15, y: 23.43, w: 19.38, h: 31.43 },
+  4: { x: 46.16, y: 20.29, w: 18.76, h: 34.86 },
+  5: { x: 36.01, y: 35.14, w: 16.30, h: 25.43 },
+};
+
 function App() {
   const [step, setStep] = useState(0); // Current image index
   const [region, setRegion] = useState(null); // { x, y, w, h } in %
@@ -13,6 +24,7 @@ function App() {
 
   const currentImageSrc = `/images/${IMAGE_FILES[step]}`;
   const nextImageSrc = step < IMAGE_FILES.length - 1 ? `/images/${IMAGE_FILES[step + 1]}` : null;
+  const currentGuide = GUIDES[step];
 
   const containerRef = useRef(null);
 
@@ -35,15 +47,6 @@ function App() {
     const currentY = ((e.clientY - rect.top) / rect.height) * 100;
 
     const width = currentX - dragStart.x;
-    // Force aspect ratio to match screen (container) for perfect zoom?
-    // Let's keep it freeform but maybe square is safer? 
-    // User asked "draw a box", usually implies freeform. 
-    // But for "Infinite Zoom" to work perfectly, the box aspect ratio SHOULD ideally match the viewport.
-    // Let's enforce the aspect ratio of the selection to match the container (16:9 approx).
-    // Or just let user draw and we zoom to "cover" or "contain".
-    // Let's try simple freeform first, but maybe just width determines height if we want 1:1 map.
-    // Let's settle on: Box determines the "Next Viewport".
-
     const height = (currentY - dragStart.y);
 
     setRegion({
@@ -65,23 +68,17 @@ function App() {
 
   const handleTransitionEnd = () => {
     if (isZooming) {
-      // Transition finished.
-      // 1. Advance Step
       setStep(s => s + 1);
-      // 2. Reset Region & Zoom State
       setIsZooming(false);
       setRegion(null);
     }
   };
 
   // Calculate Transform for Zoom
-  // We want the Region to fill the Container.
-  // Scale = 100 / region.w (assuming width dominant)
-  // Origin = Center of region
   const zoomStyle = isZooming && region ? {
     transformOrigin: `${region.x + region.w / 2}% ${region.y + region.h / 2}%`,
-    transform: `scale(${100 / region.w})`, // Scale based on width
-    transition: 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)' // Slow ease-in-out or ease-in
+    transform: `scale(${100 / region.w})`,
+    transition: 'transform 3s cubic-bezier(0.25, 1, 0.5, 1)'
   } : {
     transformOrigin: 'center center',
     transform: 'scale(1)',
@@ -91,7 +88,7 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <div className="brand">Mosaic Zoom: Step {step + 1} / {IMAGE_FILES.length}</div>
+        <div className="brand">Infinite Zoom</div>
         <div className="controls-bar">
           {!isZooming && nextImageSrc && region && region.w > 5 && (
             <button className="primary" onClick={startZoom}>ZOOM ➤</button>
@@ -111,36 +108,32 @@ function App() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {/* 
-              The Zoom Layer.
-              This whole div scales up.
-            */}
           <div
             className="zoom-layer"
             style={zoomStyle}
             onTransitionEnd={handleTransitionEnd}
           >
-            {/* Current Image */}
             <img
               src={currentImageSrc}
               className="current-image"
               alt="current"
             />
-
-            {/* 
-                  Next Image (Hidden initially, or overlay inside box?)
-                  For "Mosaic Effect", we can just let the Current Image pixelate as it scales.
-                  AND we can overlay the next image inside the box with opacity, or just reveal it next step.
-                  The user says "出現馬賽克過場效果, 然後出現第二張".
-                  This implies the transition ITSELF is the effect, then the switch happens.
-                  
-                  To make it look like a cool transition:
-                  We can overlay the NEXT image inside the selection region immediately?
-                  Or just zoom the current one until it's blurry/blocky, then switch.
-                */}
           </div>
 
-          {/* UI Overlays (Not scaled) */}
+          {/* Guide Box Layer (User Hint) */}
+          {!isZooming && currentGuide && (
+            <div
+              className="guide-box"
+              style={{
+                left: `${currentGuide.x}%`,
+                top: `${currentGuide.y}%`,
+                width: `${currentGuide.w}%`,
+                height: `${currentGuide.h}%`
+              }}
+            />
+          )}
+
+          {/* User Selection Layer */}
           {!isZooming && region && (
             <div
               className="selection-box"
@@ -153,14 +146,33 @@ function App() {
             />
           )}
 
-          {/* Guide Text */}
-          {!isZooming && !region && nextImageSrc && (
-            <div className="guide-text">Draw a box to define the next frame</div>
-          )}
         </div>
+
+        {/* Instruction overlay */}
+        {!isZooming && !region && step === 0 && (
+          <div style={{
+            position: 'absolute',
+            top: 80,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(0,0,0,0.6)',
+            color: '#fff',
+            padding: '10px 20px',
+            borderRadius: 30,
+            pointerEvents: 'none',
+            fontSize: '1.2rem',
+            border: '1px solid rgba(255,255,255,0.3)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 20
+          }}>
+            請參考白色透明框框 去框選要放大的區域
+          </div>
+        )}
+
       </div>
     </div>
   );
 }
 
 export default App;
+

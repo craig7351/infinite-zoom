@@ -114,3 +114,45 @@ button.secondary {
   background: #444;
   color: white;
 }
+
+@keyframes pulse-guide {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.guide-box {
+  position: absolute;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  animation: pulse-guide 5s infinite ease-in-out;
+}
+
+.status-panel {
+  position: absolute;
+  top: 70px;
+  /* Below header */
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #0f0;
+  pointer-events: auto;
+  /* Allow clicks */
+  border: 1px solid #333;
+  z-index: 200;
+}
