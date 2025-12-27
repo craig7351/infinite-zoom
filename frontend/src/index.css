@@ -1,0 +1,116 @@
+:root {
+  --bg-color: #111;
+  --accent-color: #ff0055;
+  --text-color: #eee;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #222;
+  border-bottom: 1px solid #333;
+  z-index: 100;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-container {
+  width: 80vw;
+  height: 45vw;
+  /* 16:9ish */
+  max-height: 80vh;
+  position: relative;
+  border: 1px solid #444;
+  overflow: hidden;
+  /* Mask the zoom overflow */
+  background: black;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.zoom-layer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  will-change: transform;
+  /* KEY to Mosaic Effect: Pixelated rendering when scaled up */
+  image-rendering: pixelated;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.current-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.selection-box {
+  position: absolute;
+  border: 2px solid var(--accent-color);
+  background: transparent;
+  box-shadow: 0 0 10px var(--accent-color);
+  pointer-events: none;
+}
+
+.guide-text {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px 16px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+button.primary {
+  background: var(--accent-color);
+  color: white;
+}
+
+button.primary:hover {
+  filter: brightness(1.2);
+}
+
+button.secondary {
+  background: #444;
+  color: white;
+}
