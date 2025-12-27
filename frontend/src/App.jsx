@@ -144,6 +144,7 @@ function App() {
               className="guide-box"
               style={{
                 left: `${currentGuide.x}%`,
+                top: `${currentGuide.y}%`,
                 width: `${currentGuide.w}%`,
                 height: `${currentGuide.h}%`,
                 pointerEvents: clickMode ? 'auto' : 'none',
