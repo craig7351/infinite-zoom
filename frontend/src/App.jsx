@@ -23,8 +23,8 @@ function App() {
   const [isZooming, setIsZooming] = useState(false);
   const [clickMode, setClickMode] = useState(false);
 
-  const currentImageSrc = `/images/${IMAGE_FILES[step]}`;
-  const nextImageSrc = step < IMAGE_FILES.length - 1 ? `/images/${IMAGE_FILES[step + 1]}` : null;
+  const currentImageSrc = `${import.meta.env.BASE_URL}images/${IMAGE_FILES[step]}`;
+  const nextImageSrc = step < IMAGE_FILES.length - 1 ? `${import.meta.env.BASE_URL}images/${IMAGE_FILES[step + 1]}` : null;
   const currentGuide = GUIDES[step];
 
   const containerRef = useRef(null);
