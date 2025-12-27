@@ -61,6 +61,12 @@ function App() {
     setDragStart(null);
   };
 
+  const handleGuideClick = () => {
+    if (isZooming || !currentGuide) return;
+    setRegion({ ...currentGuide });
+    setIsZooming(true);
+  };
+
   const startZoom = () => {
     if (!region || !nextImageSrc) return;
     setIsZooming(true);
@@ -130,6 +136,7 @@ function App() {
                 width: `${currentGuide.w}%`,
                 height: `${currentGuide.h}%`
               }}
+              onClick={handleGuideClick}
             />
           )}
 
