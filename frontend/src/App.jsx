@@ -21,6 +21,7 @@ function App() {
   const [step, setStep] = useState(0); // Current image index
   const [region, setRegion] = useState(null); // { x, y, w, h } in %
   const [isZooming, setIsZooming] = useState(false);
+  const [clickMode, setClickMode] = useState(false);
 
   const currentImageSrc = `/images/${IMAGE_FILES[step]}`;
   const nextImageSrc = step < IMAGE_FILES.length - 1 ? `/images/${IMAGE_FILES[step + 1]}` : null;
@@ -94,7 +95,18 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <div className="brand">Infinite Zoom</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div className="brand">Infinite Zoom</div>
+          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.9rem', color: '#ccc' }}>
+            <input
+              type="checkbox"
+              checked={clickMode}
+              onChange={(e) => setClickMode(e.target.checked)}
+              style={{ marginRight: '5px' }}
+            />
+            點選模式 (Click Mode)
+          </label>
+        </div>
         <div className="controls-bar">
           {!isZooming && nextImageSrc && region && region.w > 5 && (
             <button className="primary" onClick={startZoom}>ZOOM ➤</button>
@@ -132,9 +144,11 @@ function App() {
               className="guide-box"
               style={{
                 left: `${currentGuide.x}%`,
-                top: `${currentGuide.y}%`,
                 width: `${currentGuide.w}%`,
-                height: `${currentGuide.h}%`
+                height: `${currentGuide.h}%`,
+                pointerEvents: clickMode ? 'auto' : 'none',
+                cursor: clickMode ? 'pointer' : 'default',
+                background: clickMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)'
               }}
               onClick={handleGuideClick}
             />
