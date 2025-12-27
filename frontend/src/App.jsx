@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 // Use odd numbered images as detected: 1, 3, 5, ...
 // Assuming max is 13 based on file list.
 const IMAGE_FILES = [
-  '1.png', '3.png', '5.png', '7.png', '9.png', '11.png', '13.png'
+  '1.webp', '3.webp', '5.webp', '7.webp', '9.webp', '11.webp', '13.webp'
 ];
 
 // Define optional guides for each image (User will provide these values later)
